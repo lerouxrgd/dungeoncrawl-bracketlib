@@ -35,7 +35,7 @@ pub fn random_move(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
                     },));
                 }
 
-                // Prevent monsters don't run into each other
+                // Prevent monsters from running into each other
                 // (they actually do if both emit the same WantsToMove...)
                 attacked = true;
             });
