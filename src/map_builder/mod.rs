@@ -22,8 +22,13 @@ impl MapBuilder {
     const NUM_MONSTERS: usize = 50;
 
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
-        let mut architect = drunkard::DrunkardsWalkArchitect;
-        architect.new(rng)
+        let mut architect: Box<dyn MapArchitect> = match rng.range(0, 3) {
+            0 => Box::new(drunkard::DrunkardsWalkArchitect),
+            1 => Box::new(rooms::RoomsArchitect),
+            _ => Box::new(cellular::CellularAutomataArchitect),
+        };
+        let mb = architect.new(rng);
+        mb
     }
 
     fn fill(&mut self, tile: TileType) {
