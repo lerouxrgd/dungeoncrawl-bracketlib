@@ -1,4 +1,5 @@
 mod cellular;
+mod drunkard;
 mod empty;
 mod rooms;
 
@@ -21,7 +22,7 @@ impl MapBuilder {
     const NUM_MONSTERS: usize = 50;
 
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
-        let mut architect = cellular::CellularAutomataArchitect;
+        let mut architect = drunkard::DrunkardsWalkArchitect;
         architect.new(rng)
     }
 
@@ -38,13 +39,13 @@ impl MapBuilder {
             1024.0,
         );
 
-        const UNREACHABLE: &f32 = &f32::MAX;
+        const UNREACHABLE: f32 = f32::MAX;
         self.map.index_to_point2d(
             dijkstra_map
                 .map
                 .iter()
                 .enumerate()
-                .filter(|(_, dist)| *dist < UNREACHABLE)
+                .filter(|(_, &dist)| dist < UNREACHABLE)
                 .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
                 .unwrap()
                 .0,
