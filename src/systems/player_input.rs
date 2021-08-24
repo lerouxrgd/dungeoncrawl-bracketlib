@@ -63,18 +63,8 @@ pub fn player_input(
         .find_map(|(&player, &player_pos)| Some((player, player_pos + delta)))
         .unwrap();
 
-    // No movement => heal
-    if delta == Point::zero() {
-        ecs.entry_mut(player)
-            .unwrap()
-            .get_component_mut::<Health>()
-            .map(|mut health| {
-                health.current = i32::min(health.max, health.current + 1);
-            })
-            .ok();
-    } else
     // Move or attack
-    {
+    if delta != Point::zero() {
         let mut hit_something = false;
         let mut enemies = <(Entity, &Point)>::query().filter(component::<Enemy>());
         enemies
