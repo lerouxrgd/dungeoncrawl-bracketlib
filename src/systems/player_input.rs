@@ -41,6 +41,17 @@ pub fn player_input(
             Point::zero()
         }
 
+        // use item
+        Some(VirtualKeyCode::Key1) => use_item(0, ecs, commands),
+        Some(VirtualKeyCode::Key2) => use_item(1, ecs, commands),
+        Some(VirtualKeyCode::Key3) => use_item(2, ecs, commands),
+        Some(VirtualKeyCode::Key4) => use_item(3, ecs, commands),
+        Some(VirtualKeyCode::Key5) => use_item(4, ecs, commands),
+        Some(VirtualKeyCode::Key6) => use_item(5, ecs, commands),
+        Some(VirtualKeyCode::Key7) => use_item(6, ecs, commands),
+        Some(VirtualKeyCode::Key8) => use_item(7, ecs, commands),
+        Some(VirtualKeyCode::Key9) => use_item(8, ecs, commands),
+
         // ignore other keys
         Some(_) => Point::zero(),
         // no key were pressed
@@ -87,4 +98,27 @@ pub fn player_input(
     }
 
     *turn_state = TurnState::PlayerTurn;
+}
+
+fn use_item(n: usize, ecs: &mut SubWorld, commands: &mut CommandBuffer) -> Point {
+    let player = <(Entity, &Player)>::query()
+        .iter(ecs)
+        .find_map(|(&player, _)| Some(player))
+        .unwrap();
+
+    let item = <(Entity, &Item, &Carried)>::query()
+        .iter(ecs)
+        .filter(|(_, _, carried)| carried.0 == player)
+        .enumerate()
+        .filter(|&(item_idx, (_, _, _))| item_idx == n)
+        .find_map(|(_, (&item, _, _))| Some(item));
+
+    if let Some(item) = item {
+        commands.push((ActivateItem {
+            used_by: player,
+            item,
+        },));
+    }
+
+    Point::zero()
 }
