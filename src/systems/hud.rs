@@ -33,10 +33,17 @@ pub fn hud(ecs: &SubWorld) {
     // 2. Draw help message
     draw_batch.print_centered(1, "Explore the Dungeon. Cursor keys to move.");
 
-    let player = <(Entity, &Player)>::query()
+    let (player, map_level) = <(Entity, &Player)>::query()
         .iter(ecs)
-        .find_map(|(&player, _)| Some(player))
+        .find_map(|(&player, p)| Some((player, p.map_level)))
         .unwrap();
+
+    // 3. Display current dungeon level
+    draw_batch.print_color_right(
+        Point::new(SCREEN_WIDTH * 2, 1),
+        format!("Dungeon Level: {}", map_level + 1),
+        ColorPair::new(YELLOW, BLACK),
+    );
 
     let mut item_query = <(&Item, &Name, &Carried)>::query();
     let mut y = 3;
@@ -44,13 +51,13 @@ pub fn hud(ecs: &SubWorld) {
         .iter(ecs)
         .filter(|(_, _, carried)| carried.0 == player) // carried by the player
         .for_each(|(_, name, _)| {
-            // 3.1. Draw carried items
+            // 4.1. Draw carried items
             draw_batch.print(Point::new(3, y), format!("{} : {}", y - 2, &name.0));
             y += 1;
         });
 
     if y > 3 {
-        // 3.2. Draw legend (above items)
+        // 4.2. Draw legend (above items)
         draw_batch.print_color(
             Point::new(3, 2),
             "Items carried",
